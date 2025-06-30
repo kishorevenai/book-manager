@@ -5,17 +5,35 @@ import { useNavigate } from "react-router-dom";
 import { selectCurrentToken } from "../../Pages/Auth/authSlice";
 import { useSelector } from "react-redux";
 import Drawer from "@mui/material/Drawer";
+import { useLoginMutation } from "../../Pages/Auth/authApiSlice";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../Pages/Auth/authSlice";
 
 const Header = () => {
-  const [openDrawer, setOpenDrawer] = useState<Boolean>(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [openDrawer, setOpenDrawer] = useState<Boolean>(false);
+
+  const [login, { isLoading, isError, isSuccess, error }] = useLoginMutation();
+
   const options = [
     { label: "All Books", value: "all-books", link: "/" },
     { label: "Your Books", value: "home", link: "/your-book" },
   ];
 
+  const handleLogin = async () => {
+    try {
+      const result = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...result }));
+      setOpenDrawer(false);
+    } catch (err) {
+      console.log("HAIIII");
+    }
+  };
+
   const token = useSelector(selectCurrentToken);
-  console.log("============>", token);
 
   const handleRoute = (link: string) => {
     if (!token) {
@@ -54,18 +72,25 @@ const Header = () => {
             Please Login to Continue
           </Typography>
           <Input
-            type="text"
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
             placeholder="Enter your username"
             sx={{ marginBottom: 2, width: "100%" }}
           />
 
           <Input
+            onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Enter your password"
             sx={{ marginBottom: 2, width: "100%" }}
           />
 
-          <Button variant="contained" color="primary">
+          <Button
+            disabled={email !== "" && password !== "" ? false : true}
+            onClick={handleLogin}
+            variant="contained"
+            color="primary"
+          >
             <Typography variant="caption">Sign In</Typography>
           </Button>
           <Box
@@ -78,7 +103,11 @@ const Header = () => {
             }}
           >
             <Typography variant="caption">Dont Have An Account?</Typography>
-            <Button variant="contained" color="primary">
+            <Button
+              disabled={email !== "" && password !== "" ? false : true}
+              variant="contained"
+              color="primary"
+            >
               <Typography variant="caption">Sign Up</Typography>
             </Button>
           </Box>

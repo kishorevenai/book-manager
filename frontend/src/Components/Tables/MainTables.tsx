@@ -2,13 +2,19 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 import { TextField, Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit"; // ✅ Corrected import
-import { gap } from "@mui/system";
+import EditIcon from "@mui/icons-material/Edit";
 
 export default function DataTable({
   deleteButton = false,
   editButton = false,
   CheckboxButton = false,
+  rows: propRows,
+}: {
+  deleteButton: Boolean;
+  editButton: Boolean;
+  CheckboxButton?: Boolean;
+  rows: any[];
+  columns?: any[];
 }) {
   const [search, setSearch] = useState<string>("");
 
@@ -64,25 +70,25 @@ export default function DataTable({
         }
       : null;
 
-  const columns = actionColumn ? [...baseColumns, actionColumn] : baseColumns;
+  const Xcolumns = actionColumn ? [...baseColumns, actionColumn] : baseColumns;
 
-  const rows = [
-    { id: 1, title: "Snow", author: "Jon", age: 35 },
-    { id: 2, title: "Snow", author: "Jon", age: 35 },
-    { id: 3, title: "Snow", author: "Jon", age: 35 },
-    { id: 4, title: "Snow", author: "Jon", age: 35 },
-    { id: 5, title: "Snow", author: "Jon", age: 35 },
-    { id: 6, title: "Snow", author: "Jon", age: 35 },
-    { id: 7, title: "Snow", author: "Jon", age: 35 },
-    { id: 8, title: "Become Rich ASF", author: "Jon", age: 35 },
-    { id: 9, title: "Snow", author: "Jon", age: 35 },
-    { id: 10, title: "Snow", author: "Jon", age: 35 },
-    { id: 11, title: "Snow", author: "Jon", age: 35 },
-    { id: 12, title: "Snow", author: "Jon", age: 35 },
-    { id: 13, title: "Snow", author: "Jon", age: 35 },
-    { id: 14, title: "Snow", author: "Jon", age: 35 },
-    { id: 15, title: "Snow", author: "Jon", age: 35 },
-  ];
+  // const rows = [
+  //   { id: 1, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 2, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 3, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 4, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 5, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 6, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 7, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 8, title: "Become Rich ASF", author: "Jon", age: 35 },
+  //   { id: 9, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 10, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 11, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 12, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 13, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 14, title: "Snow", author: "Jon", age: 35 },
+  //   { id: 15, title: "Snow", author: "Jon", age: 35 },
+  // ];
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -90,9 +96,11 @@ export default function DataTable({
     setSearch(event.target.value);
   };
 
-  const filteredRows = rows.filter((row) =>
+  const filteredRows = propRows.filter((row) =>
     row.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  let content = null;
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -107,7 +115,7 @@ export default function DataTable({
 
       <DataGrid
         rows={filteredRows}
-        columns={columns}
+        columns={Xcolumns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
         checkboxSelection={CheckboxButton}

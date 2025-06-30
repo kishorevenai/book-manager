@@ -4,14 +4,17 @@ import MainLayout from "./Components/Layouts/MainLayout";
 import AllBooks from "./Pages/Books/AllBooks";
 import YourBook from "./Pages/Books/YourBook";
 import PrefetchBooks from "./Pages/Books/PrefetchBooks";
+import PersistLogin from "./Pages/Auth/PersistLogin";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<AllBooks />} />
         <Route element={<PrefetchBooks />}>
-          <Route path="/your-book" element={<YourBook />} />
+          <Route index element={<AllBooks />} />
+          <Route element={<PersistLogin />}>
+            <Route path="/your-book" element={<YourBook />} />
+          </Route>
         </Route>
       </Route>
     </Routes>
