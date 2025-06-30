@@ -28,6 +28,7 @@ const Header = () => {
       const result = await login({ email, password }).unwrap();
       dispatch(setCredentials({ ...result }));
       setOpenDrawer(false);
+      navigate("/your-book");
     } catch (err) {
       console.log("HAIIII");
     }

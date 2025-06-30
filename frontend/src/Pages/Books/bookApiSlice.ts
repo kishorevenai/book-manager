@@ -20,6 +20,13 @@ export const bookApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    addBookToUser: builder.mutation({
+      query: ({ ids, email }) => ({
+        url: `/books/add-book-to-user`,
+        method: "POST",
+        body: { bookIds: ids, email },
+      }),
+    }),
   }),
 });
 
@@ -27,4 +34,5 @@ export const {
   useGetAllBooksQuery,
   useGetYourBooksQuery,
   useDeleteSpecificBookMutation,
+  useAddBookToUserMutation,
 } = bookApiSlice;

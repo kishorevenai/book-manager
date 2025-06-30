@@ -9,12 +9,14 @@ export default function DataTable({
   editButton = false,
   CheckboxButton = false,
   rows: propRows,
+  setSelectedRowIds,
 }: {
   deleteButton: Boolean;
-  editButton: Boolean;
+  editButton?: Boolean;
   CheckboxButton?: Boolean;
   rows: any[];
   columns?: any[];
+  setSelectedRowIds?: any;
 }) {
   const [search, setSearch] = useState<string>("");
 
@@ -27,14 +29,14 @@ export default function DataTable({
   };
 
   const baseColumns = [
-    { field: "id", headerName: "Id", width: 70 },
+    { field: "book_id", headerName: "Book_id", width: 70 },
     { field: "title", headerName: "Title", width: 400 },
     { field: "author", headerName: "Author", width: 300 },
     {
-      field: "age",
+      field: "published_date",
       headerName: "ISBN",
       type: "number",
-      width: 90,
+      width: 300,
     },
   ];
 
@@ -72,23 +74,23 @@ export default function DataTable({
 
   const Xcolumns = actionColumn ? [...baseColumns, actionColumn] : baseColumns;
 
-  // const rows = [
-  //   { id: 1, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 2, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 3, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 4, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 5, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 6, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 7, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 8, title: "Become Rich ASF", author: "Jon", age: 35 },
-  //   { id: 9, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 10, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 11, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 12, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 13, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 14, title: "Snow", author: "Jon", age: 35 },
-  //   { id: 15, title: "Snow", author: "Jon", age: 35 },
-  // ];
+  const rows = [
+    { id: 1, title: "Snow", author: "Jon", age: 35 },
+    { id: 2, title: "Snow", author: "Jon", age: 35 },
+    { id: 3, title: "Snow", author: "Jon", age: 35 },
+    { id: 4, title: "Snow", author: "Jon", age: 35 },
+    { id: 5, title: "Snow", author: "Jon", age: 35 },
+    { id: 6, title: "Snow", author: "Jon", age: 35 },
+    { id: 7, title: "Snow", author: "Jon", age: 35 },
+    { id: 8, title: "Become Rich ASF", author: "Jon", age: 35 },
+    { id: 9, title: "Snow", author: "Jon", age: 35 },
+    { id: 10, title: "Snow", author: "Jon", age: 35 },
+    { id: 11, title: "Snow", author: "Jon", age: 35 },
+    { id: 12, title: "Snow", author: "Jon", age: 35 },
+    { id: 13, title: "Snow", author: "Jon", age: 35 },
+    { id: 14, title: "Snow", author: "Jon", age: 35 },
+    { id: 15, title: "Snow", author: "Jon", age: 35 },
+  ];
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -99,8 +101,6 @@ export default function DataTable({
   const filteredRows = propRows.filter((row) =>
     row.title.toLowerCase().includes(search.toLowerCase())
   );
-
-  let content = null;
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -116,10 +116,19 @@ export default function DataTable({
       <DataGrid
         rows={filteredRows}
         columns={Xcolumns}
+        getRowId={(row) => row.book_id}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
         checkboxSelection={CheckboxButton}
         sx={{ border: 0 }}
+        onRowSelectionModelChange={(newSelection) => {
+          let newArr = [];
+          for (let nums of newSelection.ids) {
+            newArr.push(nums);
+          }
+          setSelectedRowIds(newArr);
+          console.log("Selected book IDs:", newArr);
+        }}
       />
     </Box>
   );

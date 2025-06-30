@@ -10,12 +10,13 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const corsOption_1 = require("./config/corsOption");
+const bookRoutes_1 = __importDefault(require("./routes/bookRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)(corsOption_1.corsOptions));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 // Get all books
-app.get("/api/books", (req, res) => { });
+app.use("/api/books", bookRoutes_1.default);
 // Get books for a specific user
 app.use("/api/auth", authRoutes_1.default);
 app.listen(3500, () => {
