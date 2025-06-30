@@ -9,5 +9,6 @@ const authController_1 = require("../controller/authController");
 // Common async handler
 const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 routes.post("/login", asyncHandler(authController_1.login));
-routes.post("/create", asyncHandler(authController_1.createUser));
+// routes.post("/create", asyncHandler(createUser));
+// routes.get("/refresh", asyncHandler(refresh));
 exports.default = routes;

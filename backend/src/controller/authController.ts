@@ -1,19 +1,14 @@
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { query } from "../dbConn/pgClient";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const result = await query("SELECT * FROM users WHERE email = $1", [email]);
+    const user = result.rows[0];
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -50,78 +45,79 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {}
 };
 
-export const refresh = async (req: Request, res: Response) => {
-  try {
-    const cookie = req.cookies;
+// export const refresh = async (req: Request, res: Response) => {
+//   try {
+//     const cookie = req.cookies;
 
-    if (!cookie || !cookie.token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+//     if (!cookie || !cookie.token) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
 
-    const refreshToken = cookie.token;
+//     const refreshToken = cookie.token;
 
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN as string,
-      async (err: jwt.VerifyErrors | null, decoded: any) => {
-        if (err) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
+//     jwt.verify(
+//       refreshToken,
+//       process.env.REFRESH_TOKEN as string,
+//       async (err: jwt.VerifyErrors | null, decoded: any) => {
+//         if (err) {
+//           return res.status(403).json({ message: "Forbidden" });
+//         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            id: (decoded as { id: string }).id,
-          },
-        });
+//         const user = await prisma.user.findUnique({
+//           where: {
+//             id: (decoded as { id: string }).id,
+//           },
+//         });
 
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
+//         if (!user) {
+//           return res.status(404).json({ message: "User not found" });
+//         }
 
-        const accessToken = jwt.sign(
-          {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-          process.env.ACCESS_TOKEN as string,
-          {
-            expiresIn: "1h",
-          }
-        );
+//         const accessToken = jwt.sign(
+//           {
+//             id: user.id,
+//             name: user.name,
+//             email: user.email,
+//             createdAt: user.createdAt,
+//             updatedAt: user.updatedAt,
+//           },
+//           process.env.ACCESS_TOKEN as string,
+//           {
+//             expiresIn: "1h",
+//           }
+//         );
 
-        return res.status(200).json({ accessToken });
-      }
-    );
-  } catch (error) {
-    return res.status(400).json({ message: "Unauthorised User" });
-  }
-};
-export const createUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+//         return res.status(200).json({ accessToken });
+//       }
+//     );
+//   } catch (error) {
+//     return res.status(400).json({ message: "Unauthorised User" });
+//   }
+// };
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
+// export const createUser = async (req: Request, res: Response) => {
+//   const { email, password } = req.body;
 
-  if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
-  }
+//   const existingUser = await prisma.user.findUnique({
+//     where: { email },
+//   });
 
-  // Hash the password before saving
-  const hashedPassword = await bcrypt.hash(password, 10);
+//   if (existingUser) {
+//     return res.status(400).json({ message: "User already exists" });
+//   }
 
-  const newUser = await prisma.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-    },
-  });
+//   // Hash the password before saving
+//   const hashedPassword = await bcrypt.hash(password, 10);
 
-  res.status(201).json({
-    message: "User created successfully",
-    newUser,
-  });
-};
+//   const newUser = await prisma.user.create({
+//     data: {
+//       email,
+//       password: hashedPassword,
+//     },
+//   });
+
+//   res.status(201).json({
+//     message: "User created successfully",
+//     newUser,
+//   });
+// };
