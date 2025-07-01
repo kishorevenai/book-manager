@@ -11,34 +11,58 @@ export const getAllBooks = async (req: Request, res: Response) => {
 };
 
 export const addBookToUser = async (req: Request, res: Response) => {
-  const { bookIds, email } = req.body;
+  const { bookIds } = req.body;
+  const email = req.email;
 
-  console.log(bookIds, email);
+  if (!Array.isArray(bookIds) || bookIds.length === 0) {
+    return res.status(400).json({ message: "No books provided" });
+  }
 
-  // try {
-  //   // Check if the books already exist for the user
-  //   const existingBooks = await query(
-  //     "SELECT * FROM user_books WHERE user_id = $1 AND book_id = ANY($2)",
-  //     [userId, bookIds]
-  //   );
+  try {
+    // Get the user_id using email
+    const userRes = await query("SELECT user_id FROM users WHERE email = $1", [
+      email,
+    ]);
+    const user = userRes.rows[0];
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  //   if (existingBooks.rows.length > 0) {
-  //     return res
-  //       .status(400)
-  //       .json({ message: "Some books already exist in your library" });
-  //   }
+    const userId = user.user_id;
 
-  //   // Add the books to the user's library
-  //   const promises = bookIds.map((bookId: number) =>
-  //     query("INSERT INTO user_books (user_id, book_id) VALUES ($1, $2)", [
-  //       userId,
-  //       bookId,
-  //     ])
-  //   );
-  //   await Promise.all(promises);
+    // Get existing book_ids for this user
+    const existingRes = await query(
+      "SELECT book_id FROM user_books WHERE user_id = $1 AND book_id = ANY($2)",
+      [userId, bookIds]
+    );
 
-  //   res.status(201).json({ message: "Books added to your library" });
-  // } catch (error) {
-  //   res.status(500).json({ message: "Error adding books to your library" });
-  // }
+    const existingBookIds = existingRes.rows.map((row) => row.book_id);
+
+    // Filter out bookIds that are already assigned
+    const newBookIds = bookIds.filter(
+      (bookId: number) => !existingBookIds.includes(bookId)
+    );
+
+    if (newBookIds.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "All selected books already exist in your library" });
+    }
+
+    // Insert only the new books
+    const insertPromises = newBookIds.map((bookId) =>
+      query(
+        "INSERT INTO user_books (user_id, book_id, assigned_at) VALUES ($1, $2, NOW())",
+        [userId, bookId]
+      )
+    );
+    await Promise.all(insertPromises);
+
+    res
+      .status(201)
+      .json({ message: "Books added to your library", addedBooks: newBookIds });
+  } catch (error) {
+    console.error("Error adding books:", error);
+    res.status(500).json({ message: "Error adding books to your library" });
+  }
 };
