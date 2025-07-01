@@ -95,7 +95,7 @@ export const refresh = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { email, password, name } = req.body;
+  const { email, password, username } = req.body;
 
   const result = await query("SELECT * FROM users WHERE email = $1", [email]);
 
@@ -108,7 +108,7 @@ export const createUser = async (req: Request, res: Response) => {
 
   const newUser = await query(
     "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-    [name, email, hashedPassword]
+    [username, email, hashedPassword]
   );
 
   res.status(201).json({

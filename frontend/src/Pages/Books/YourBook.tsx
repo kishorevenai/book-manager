@@ -17,7 +17,9 @@ const YourBook = () => {
   } else if (isError) {
     content = <Typography>Error loading your books</Typography>;
   } else if (isSuccess && books.length > 0) {
-    content = <MainTables deleteButton={true} editButton={true} rows={books} />;
+    content = (
+      <MainTables deleteButton={true} editButton={false} rows={books} />
+    );
   } else {
     content = <Typography>No books found</Typography>;
   }

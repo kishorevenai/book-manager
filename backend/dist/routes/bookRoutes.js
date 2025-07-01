@@ -11,4 +11,6 @@ const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, ne
 routes.route("/").get(asyncHandler(bookController_1.getAllBooks));
 routes.use(verifyJWT_1.verifyJWT);
 routes.route("/add-book-to-user").post(asyncHandler(bookController_1.addBookToUser));
+routes.route("/get-all-books-of-user").get(asyncHandler(bookController_1.getAllBooksOfUser));
+routes.route("/delete-user-book").delete(asyncHandler(bookController_1.deleteUsersBook));
 exports.default = routes;

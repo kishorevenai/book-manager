@@ -10,15 +10,18 @@ export const bookApiSlice = apiSlice.injectEndpoints({
     }),
     getYourBooks: builder.query({
       query: () => ({
-        url: "/books/your-books",
+        url: "/books/get-all-books-of-user",
         method: "GET",
       }),
+      providesTags: ["Userbooks"],
     }),
     deleteSpecificBook: builder.mutation({
-      query: (id) => ({
-        url: `/books/${id}`,
+      query: ({ ids }) => ({
+        url: `/books/delete-user-book`,
         method: "DELETE",
+        body: { bookId: ids },
       }),
+      invalidatesTags: ["Userbooks"],
     }),
     addBookToUser: builder.mutation({
       query: ({ ids, email }) => ({
@@ -26,6 +29,7 @@ export const bookApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: { bookIds: ids, email },
       }),
+      invalidatesTags: ["Userbooks"],
     }),
   }),
 });

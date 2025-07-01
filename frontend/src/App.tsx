@@ -5,6 +5,7 @@ import AllBooks from "./Pages/Books/AllBooks";
 import YourBook from "./Pages/Books/YourBook";
 import PrefetchBooks from "./Pages/Books/PrefetchBooks";
 import PersistLogin from "./Pages/Auth/PersistLogin";
+import PrefetchYourBooks from "./Pages/Books/PrefetchYourBook";
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
         <Route element={<PrefetchBooks />}>
           <Route index element={<AllBooks />} />
           <Route element={<PersistLogin />}>
-            <Route path="/your-book" element={<YourBook />} />
+            <Route element={<PrefetchYourBooks />}>
+              <Route path="/your-book" element={<YourBook />} />
+            </Route>
           </Route>
         </Route>
       </Route>

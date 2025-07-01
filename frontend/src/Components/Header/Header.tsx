@@ -1,40 +1,78 @@
 import { useState } from "react";
 import icon from "../../assets/icon.png";
-import { Box, Typography, Input, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Input,
+  Button,
+  Drawer,
+  Snackbar,
+} from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { selectCurrentToken } from "../../Pages/Auth/authSlice";
-import { useSelector } from "react-redux";
-import Drawer from "@mui/material/Drawer";
-import { useLoginMutation } from "../../Pages/Auth/authApiSlice";
-import { useDispatch } from "react-redux";
-import { setCredentials } from "../../Pages/Auth/authSlice";
+import { selectCurrentToken, setCredentials } from "../../Pages/Auth/authSlice";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "../../Pages/Auth/authApiSlice";
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [openDrawer, setOpenDrawer] = useState<Boolean>(false);
+  const [username, setUsername] = useState<string>(""); // new
+  const [isSignupMode, setIsSignupMode] = useState<boolean>(false); // toggle mode
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
-  const [login, { isLoading, isError, isSuccess, error }] = useLoginMutation();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
-  const options = [
-    { label: "All Books", value: "all-books", link: "/" },
-    { label: "Your Books", value: "home", link: "/your-book" },
-  ];
+  const [login] = useLoginMutation();
+  const [register] = useRegisterMutation();
+
+  const token = useSelector(selectCurrentToken);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleLogin = async () => {
     try {
       const result = await login({ email, password }).unwrap();
       dispatch(setCredentials({ ...result }));
       setOpenDrawer(false);
+      setSnackbarMessage("Logged in successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
       navigate("/your-book");
     } catch (err) {
-      console.log("HAIIII");
+      setSnackbarMessage("Login failed. Please check your credentials.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
-  const token = useSelector(selectCurrentToken);
+  const handleSignup = async () => {
+    try {
+      const result = await register({ email, password, username }).unwrap();
+      dispatch(setCredentials({ ...result }));
+      setOpenDrawer(false);
+      setSnackbarMessage("Successfully registered! Please login.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      setIsSignupMode(false); // Switch to login mode
+    } catch (err) {
+      setSnackbarMessage("Registration failed. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
 
   const handleRoute = (link: string) => {
     if (!token) {
@@ -43,6 +81,14 @@ const Header = () => {
     }
     navigate(link);
   };
+
+  const options = [
+    { label: "All Books", value: "all-books", link: "/" },
+    { label: "Your Books", value: "home", link: "/your-book" },
+  ];
+
+  const isFormValid =
+    email !== "" && password !== "" && (isSignupMode ? username !== "" : true);
 
   return (
     <Box
@@ -55,6 +101,7 @@ const Header = () => {
         justifyContent: "space-between",
       }}
     >
+      {/* Drawer for Login/Register */}
       <Drawer
         anchor="right"
         open={openDrawer}
@@ -70,12 +117,22 @@ const Header = () => {
           }}
         >
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
-            Please Login to Continue
+            {isSignupMode ? "Sign Up" : "Login to Continue"}
           </Typography>
+
+          {isSignupMode && (
+            <Input
+              onChange={(e) => setUsername(e.target.value)}
+              type="text"
+              placeholder="Enter your username"
+              sx={{ marginBottom: 2, width: "100%" }}
+            />
+          )}
+
           <Input
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            placeholder="Enter your username"
+            placeholder="Enter your email"
             sx={{ marginBottom: 2, width: "100%" }}
           />
 
@@ -87,40 +144,53 @@ const Header = () => {
           />
 
           <Button
-            disabled={email !== "" && password !== "" ? false : true}
-            onClick={handleLogin}
+            disabled={!isFormValid}
+            onClick={isSignupMode ? handleSignup : handleLogin}
             variant="contained"
             color="primary"
+            fullWidth
           >
-            <Typography variant="caption">Sign In</Typography>
+            <Typography variant="caption">
+              {isSignupMode ? "Sign Up" : "Sign In"}
+            </Typography>
           </Button>
+
           <Box
             sx={{
               marginTop: 2,
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "center",
               alignItems: "center",
               width: "100%",
             }}
           >
-            <Typography variant="caption">Dont Have An Account?</Typography>
+            <Typography variant="caption" sx={{ mr: 1 }}>
+              {isSignupMode
+                ? "Already have an account?"
+                : "Don't have an account?"}
+            </Typography>
             <Button
-              disabled={email !== "" && password !== "" ? false : true}
-              variant="contained"
-              color="primary"
+              variant="text"
+              onClick={() => setIsSignupMode(!isSignupMode)}
+              size="small"
             >
-              <Typography variant="caption">Sign Up</Typography>
+              <Typography variant="caption" sx={{ fontWeight: "bold" }}>
+                {isSignupMode ? "Login" : "Sign Up"}
+              </Typography>
             </Button>
           </Box>
         </Box>
       </Drawer>
+
+      {/* Logo and title */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}>
-        <img src={icon} alt="icon" width={50}></img>
+        <img src={icon} alt="icon" width={50} />
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           BOOK MANAGER
         </Typography>
       </Box>
 
+      {/* Navigation links */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 5, mr: 2 }}>
         {options.map((option) => (
           <Typography
@@ -137,7 +207,7 @@ const Header = () => {
                 height: "2px",
                 left: 0,
                 bottom: -2,
-                backgroundColor: "black", // or your theme color
+                backgroundColor: "black",
                 transition: "width 0.3s ease-in-out",
               },
               "&:hover::after": {
@@ -149,6 +219,24 @@ const Header = () => {
           </Typography>
         ))}
       </Box>
+
+      {/* Snackbar notification */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+          elevation={6}
+          variant="filled"
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };

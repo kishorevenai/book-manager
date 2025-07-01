@@ -11,8 +11,6 @@ declare module "express-serve-static-core" {
 export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
 
-  console.log(authHeader);
-
   if (
     !authHeader ||
     (Array.isArray(authHeader)

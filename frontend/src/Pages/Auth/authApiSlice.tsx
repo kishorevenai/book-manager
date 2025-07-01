@@ -10,6 +10,13 @@ export const bookApiSlice = apiSlice.injectEndpoints({
         body: { email, password },
       }),
     }),
+    register: builder.mutation({
+      query: ({ email, password, username }) => ({
+        url: "/auth/create",
+        method: "POST",
+        body: { email, password, username },
+      }),
+    }),
     logout: builder.query({
       query: () => ({
         url: "/books/your-books",
@@ -35,5 +42,9 @@ export const bookApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useLogoutQuery, useRefreshMutation } =
-  bookApiSlice;
+export const {
+  useLoginMutation,
+  useLogoutQuery,
+  useRefreshMutation,
+  useRegisterMutation,
+} = bookApiSlice;

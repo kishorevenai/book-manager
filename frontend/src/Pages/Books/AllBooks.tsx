@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, Snackbar, Alert } from "@mui/material";
 import { Grid } from "@mui/system";
 import MainTables from "../../Components/Tables/MainTables";
 import { useGetAllBooksQuery, useAddBookToUserMutation } from "./bookApiSlice";
@@ -17,23 +17,50 @@ const AllBooks = () => {
 
   const { email } = useAuth();
 
-  console.log(email);
+  const [addBookToUser] = useAddBookToUserMutation();
 
   const token = useSelector(selectCurrentToken);
 
-  const [addBookToUser] = useAddBookToUserMutation();
-
   const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleAddBooks = async () => {
     if (!token) {
-      alert("Please login to add books to your collection.");
+      setSnackbarMessage("Please login to add books to your collection.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
       return;
     }
+
+    if (selectedBooks.length === 0) {
+      setSnackbarMessage("Please select at least one book to add.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
     try {
       await addBookToUser({ ids: selectedBooks, email }).unwrap();
+      setSnackbarMessage("Books added to your library successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Failed to add books:", error);
+      setSnackbarMessage(
+        `Failed to add books. Please try again. ${error.data.message}`
+      );
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -79,6 +106,22 @@ const AllBooks = () => {
         <Button onClick={handleAddBooks}>Add To Your Library</Button>
       </Grid>
       <Grid size={12}>{content}</Grid>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };

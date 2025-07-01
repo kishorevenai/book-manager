@@ -1,6 +1,11 @@
 import express from "express";
 const routes = express.Router();
-import { getAllBooks, addBookToUser } from "../controller/bookController";
+import {
+  getAllBooks,
+  addBookToUser,
+  getAllBooksOfUser,
+  deleteUsersBook,
+} from "../controller/bookController";
 import { verifyJWT } from "../middleware/verifyJWT";
 
 const asyncHandler =
@@ -13,5 +18,7 @@ routes.route("/").get(asyncHandler(getAllBooks));
 routes.use(verifyJWT as express.RequestHandler);
 
 routes.route("/add-book-to-user").post(asyncHandler(addBookToUser));
+routes.route("/get-all-books-of-user").get(asyncHandler(getAllBooksOfUser));
+routes.route("/delete-user-book").delete(asyncHandler(deleteUsersBook));
 
 export default routes;

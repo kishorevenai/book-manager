@@ -7,7 +7,6 @@ exports.verifyJWT = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    console.log(authHeader);
     if (!authHeader ||
         (Array.isArray(authHeader)
             ? !authHeader[0].startsWith("Bearer ")
@@ -26,7 +25,6 @@ const verifyJWT = (req, res, next) => {
     jsonwebtoken_1.default.verify(token, accessTokenSecret, (err, decoded) => {
         if (err)
             return res.status(403).json({ message: "Forbidden" });
-        console.log("CHECKING RESULT", decoded);
         req.email = decoded.email;
         next();
     });

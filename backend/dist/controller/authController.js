@@ -79,14 +79,14 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.refresh = refresh;
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password, name } = req.body;
+    const { email, password, username } = req.body;
     const result = yield (0, pgClient_1.query)("SELECT * FROM users WHERE email = $1", [email]);
     if (result.rows.length > 0) {
         return res.status(400).json({ message: "User already exists" });
     }
     // Hash the password before saving
     const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-    const newUser = yield (0, pgClient_1.query)("INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *", [name, email, hashedPassword]);
+    const newUser = yield (0, pgClient_1.query)("INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *", [username, email, hashedPassword]);
     res.status(201).json({
         message: "User created successfully",
         newUser: newUser.rows[0],
