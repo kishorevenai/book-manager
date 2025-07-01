@@ -100,9 +100,8 @@ export const getAllBooksOfUser = async (req: Request, res: Response) => {
 
 export const deleteUsersBook = async (req: Request, res: Response) => {
   const email = req.email;
-  const { bookId } = req.body;
 
-  console.log(bookId, email);
+  const { bookId } = req.body;
 
   if (!bookId) {
     return res.status(400).json({ message: "bookId is required" });
@@ -141,5 +140,25 @@ export const deleteUsersBook = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ message: "Error deleting book from user's library" });
+  }
+};
+
+export const updateBook = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const role = req.role;
+
+  console.log(id, role);
+
+  const { title, author } = req.body;
+
+  try {
+    await query("UPDATE books SET title = $1, author = $2 WHERE book_id = $3", [
+      title,
+      author,
+      id,
+    ]);
+    res.status(200).json({ message: "Book updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update book" });
   }
 };

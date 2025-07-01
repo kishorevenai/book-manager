@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUsersBook = exports.getAllBooksOfUser = exports.addBookToUser = exports.getAllBooks = void 0;
+exports.updateBook = exports.deleteUsersBook = exports.getAllBooksOfUser = exports.addBookToUser = exports.getAllBooks = void 0;
 const pgClient_1 = require("../dbConn/pgClient");
 const getAllBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -85,7 +85,6 @@ exports.getAllBooksOfUser = getAllBooksOfUser;
 const deleteUsersBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.email;
     const { bookId } = req.body;
-    console.log(bookId, email);
     if (!bookId) {
         return res.status(400).json({ message: "bookId is required" });
     }
@@ -118,3 +117,21 @@ const deleteUsersBook = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.deleteUsersBook = deleteUsersBook;
+const updateBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const role = req.role;
+    console.log(id, role);
+    const { title, author } = req.body;
+    try {
+        yield (0, pgClient_1.query)("UPDATE books SET title = $1, author = $2 WHERE book_id = $3", [
+            title,
+            author,
+            id,
+        ]);
+        res.status(200).json({ message: "Book updated successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to update book" });
+    }
+});
+exports.updateBook = updateBook;

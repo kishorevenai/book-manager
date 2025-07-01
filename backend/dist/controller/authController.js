@@ -21,6 +21,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
         const result = yield (0, pgClient_1.query)("SELECT * FROM users WHERE email = $1", [email]);
         const user = result.rows[0];
+        console.log("CHECKING RESULT", result);
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }
@@ -29,8 +30,8 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(401).json({ message: "Invalid password" });
         }
         // Generate tokens or session here if needed
-        const accessToken = jsonwebtoken_1.default.sign({ username: user.name, email: user.email }, process.env.ACCESS_TOKEN || "your_access_token_secret", { expiresIn: "1h" });
-        const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email }, process.env.REFRESH_TOKEN || "your_refresh_token_secret", { expiresIn: "7d" });
+        const accessToken = jsonwebtoken_1.default.sign({ username: user.name, email: user.email, role: user.role_id }, process.env.ACCESS_TOKEN || "your_access_token_secret", { expiresIn: "1h" });
+        const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email, role: user.role_id }, process.env.REFRESH_TOKEN || "your_refresh_token_secret", { expiresIn: "7d" });
         res.cookie("token", refreshToken, {
             httpOnly: true,
             secure: false,

@@ -6,6 +6,7 @@ import { useGetAllBooksQuery, useAddBookToUserMutation } from "./bookApiSlice";
 import { selectCurrentToken } from "../../Pages/Auth/authSlice";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
+import { useUpdateBookMutation } from "./bookApiSlice";
 
 const AllBooks = () => {
   const {
@@ -15,7 +16,7 @@ const AllBooks = () => {
     isError,
   } = useGetAllBooksQuery({});
 
-  const { email } = useAuth();
+  const { email, role } = useAuth();
 
   const [addBookToUser] = useAddBookToUserMutation();
 
@@ -23,12 +24,38 @@ const AllBooks = () => {
 
   const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
 
+  const [updateBook] = useUpdateBookMutation();
+
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
     "success"
   );
+
+  // 🔄 Handle inline row updates (editing title or author)
+  const processRowUpdate = async (newRow: any, oldRow: any) => {
+    if (newRow.title !== oldRow.title || newRow.author !== oldRow.author) {
+      try {
+        await updateBook({
+          book_id: newRow.book_id,
+          title: newRow.title,
+          author: newRow.author,
+        }).unwrap();
+
+        setSnackbarMessage("Book updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error("Failed to update book:", error);
+        setSnackbarMessage("Failed to update book. Please try again.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+    }
+
+    return newRow;
+  };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -76,6 +103,9 @@ const AllBooks = () => {
         CheckboxButton={true}
         deleteButton={false}
         rows={books}
+        editButton={role === 1}
+        roleId={role}
+        processRowUpdate={processRowUpdate}
       />
     );
   }

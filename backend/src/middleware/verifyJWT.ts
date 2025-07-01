@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 declare module "express-serve-static-core" {
   interface Request {
     email?: string;
+    role?: string | number;
   }
 }
 
@@ -35,6 +36,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     if (err) return res.status(403).json({ message: "Forbidden" });
 
     req.email = decoded.email;
+    req.role = decoded.role;
 
     next();
   });

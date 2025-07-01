@@ -13,4 +13,5 @@ routes.use(verifyJWT_1.verifyJWT);
 routes.route("/add-book-to-user").post(asyncHandler(bookController_1.addBookToUser));
 routes.route("/get-all-books-of-user").get(asyncHandler(bookController_1.getAllBooksOfUser));
 routes.route("/delete-user-book").delete(asyncHandler(bookController_1.deleteUsersBook));
+routes.route("/update/:id").put(asyncHandler(bookController_1.updateBook));
 exports.default = routes;

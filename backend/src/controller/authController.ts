@@ -10,6 +10,8 @@ export const login = async (req: Request, res: Response) => {
     const result = await query("SELECT * FROM users WHERE email = $1", [email]);
     const user = result.rows[0];
 
+    console.log("CHECKING RESULT", result);
+
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
@@ -21,13 +23,13 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate tokens or session here if needed
     const accessToken = jwt.sign(
-      { username: user.name, email: user.email },
+      { username: user.name, email: user.email, role: user.role_id },
       process.env.ACCESS_TOKEN || "your_access_token_secret",
       { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role_id },
       process.env.REFRESH_TOKEN || "your_refresh_token_secret",
       { expiresIn: "7d" }
     );

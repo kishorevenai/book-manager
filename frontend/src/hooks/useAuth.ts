@@ -11,16 +11,18 @@ export const useAuth = () => {
   const accessToken = useSelector(selectCurrentToken);
 
   if (accessToken) {
-    const { username, email }: DecodedToken = jwtDecode(accessToken);
+    const { username, email, role }: DecodedToken = jwtDecode(accessToken);
 
     return {
       username,
       email,
+      role,
     };
   }
 
   return {
     username: null,
     email: null,
+    role: null,
   };
 };

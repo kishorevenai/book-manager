@@ -26,6 +26,7 @@ const verifyJWT = (req, res, next) => {
         if (err)
             return res.status(403).json({ message: "Forbidden" });
         req.email = decoded.email;
+        req.role = decoded.role;
         next();
     });
 };

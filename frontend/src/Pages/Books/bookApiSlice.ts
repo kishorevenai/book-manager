@@ -7,6 +7,7 @@ export const bookApiSlice = apiSlice.injectEndpoints({
         url: "/books",
         method: "GET",
       }),
+      providesTags: ["adminUpdate"],
     }),
     getYourBooks: builder.query({
       query: () => ({
@@ -31,6 +32,18 @@ export const bookApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Userbooks"],
     }),
+    updateBook: builder.mutation({
+      query: ({ book_id, author, title }) => ({
+        url: `/books/update/${book_id}`,
+        method: "PUT",
+        body: {
+          bookId: book_id,
+          author,
+          title,
+        },
+      }),
+      invalidatesTags: ["adminUpdate"],
+    }),
   }),
 });
 
@@ -39,4 +52,5 @@ export const {
   useGetYourBooksQuery,
   useDeleteSpecificBookMutation,
   useAddBookToUserMutation,
+  useUpdateBookMutation,
 } = bookApiSlice;

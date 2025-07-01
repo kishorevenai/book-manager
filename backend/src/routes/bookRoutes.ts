@@ -5,6 +5,7 @@ import {
   addBookToUser,
   getAllBooksOfUser,
   deleteUsersBook,
+  updateBook,
 } from "../controller/bookController";
 import { verifyJWT } from "../middleware/verifyJWT";
 
@@ -20,5 +21,6 @@ routes.use(verifyJWT as express.RequestHandler);
 routes.route("/add-book-to-user").post(asyncHandler(addBookToUser));
 routes.route("/get-all-books-of-user").get(asyncHandler(getAllBooksOfUser));
 routes.route("/delete-user-book").delete(asyncHandler(deleteUsersBook));
+routes.route("/update/:id").put(asyncHandler(updateBook));
 
 export default routes;
