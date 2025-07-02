@@ -49,8 +49,29 @@ INSERT INTO books (title, author, published_date)
 VALUES
   ('The Pragmatic Programmer', 'Andrew Hunt', '1999-10-20'),
   ('Clean Code', 'Robert C. Martin', '2008-08-01'),
-  ('You Don’t Know JS', 'Kyle Simpson', '2014-12-27')
+  ('You Don’t Know JS', 'Kyle Simpson', '2014-12-27'),
+  ('Introduction to Algorithms', 'Thomas H. Cormen', '2009-07-31'),
+  ('Design Patterns', 'Erich Gamma', '1994-10-21'),
+  ('Refactoring', 'Martin Fowler', '1999-07-08'),
+  ('Effective Java', 'Joshua Bloch', '2001-05-28'),
+  ('Code Complete', 'Steve McConnell', '2004-06-09'),
+  ('Structure and Interpretation of Computer Programs', 'Harold Abelson', '1996-07-25'),
+  ('The Clean Coder', 'Robert C. Martin', '2011-05-13'),
+  ('Head First Design Patterns', 'Eric Freeman', '2004-10-25'),
+  ('Working Effectively with Legacy Code', 'Michael Feathers', '2004-09-22'),
+  ('JavaScript: The Good Parts', 'Douglas Crockford', '2008-05-15'),
+  ('Domain-Driven Design', 'Eric Evans', '2003-08-30'),
+  ('Continuous Delivery', 'Jez Humble', '2010-07-27'),
+  ('Soft Skills', 'John Sonmez', '2014-12-01'),
+  ('Don’t Make Me Think', 'Steve Krug', '2000-08-15'),
+  ('The Mythical Man-Month', 'Frederick P. Brooks Jr.', '1975-01-01'),
+  ('Peopleware', 'Tom DeMarco', '1987-01-01'),
+  ('The Art of Computer Programming', 'Donald Knuth', '1968-01-01'),
+  ('Programming Pearls', 'Jon Bentley', '1986-01-01'),
+  ('Algorithms to Live By', 'Brian Christian', '2016-04-19'),
+  ('Zero to One', 'Peter Thiel', '2014-09-16')
 ON CONFLICT DO NOTHING;
+
 
 -- Assign books to users
 INSERT INTO user_books (user_id, book_id)

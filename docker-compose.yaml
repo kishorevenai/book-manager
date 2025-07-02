@@ -1,19 +1,11 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
-    container_name: book_manager_db
-    restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: books
       POSTGRES_DB: book_manager
+    ports:
+      - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # ✅ Mount init.sql
-
-volumes:
-  pgdata:
+      - ./db:/docker-entrypoint-initdb.d
